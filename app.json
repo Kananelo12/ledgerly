@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "vellora",
-    "slug": "vellora",
+    "name": "Ledgerly",
+    "slug": "ledgerly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "vellora",
+    "scheme": "ledgerly",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
