@@ -13,7 +13,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
-| 1 | Stack & architecture | Foundation | planned |
+| 1 | Stack & architecture | Foundation | done |
 | 2 | Data model | Foundation | planned |
 | 3 | Design system & UI foundation | Foundation | planned |
 | 4 | Core logging loop | Slice 1 | planned |
@@ -24,15 +24,16 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 9 | Recurring expenses | Slice 6 | planned |
 | 10 | Ask about spending | Slice 7 | planned |
 | 11 | Budget suggestions | Slice 8 | planned |
-| 12 | Product analytics | Release readiness | planned |
+| 12 | Analytics & error reporting | Release readiness | planned |
 | 13 | Privacy, terms & account deletion | Release readiness | planned |
 
 ## Foundations
 
-### 1. Stack & architecture · needs a decision
-The Expo scaffold already runs. Decide where each person's financial data lives and which service owns auth, typed decisions, and notifications, then rewrite AGENTS.md "Who owns what" to match. The current rows describe Vellora's content stack.
+### 1. Stack & architecture · done
+The Expo scaffold already runs. Decide where each person's financial data lives and which service owns auth, typed decisions, and notifications, then rewrite AGENTS.md "Who owns what" to match.
 **Done when:** every responsibility in "Who owns what" names a tool that fits Ledgerly, secrets stay out of the bundle, and the app boots under the Ledgerly name.
-- [ ] Plan it: `prompts/NN-stack-and-architecture.md`, approved
+- [x] Plan it: [`prompts/01-stack-and-architecture.md`](../../prompts/01-stack-and-architecture.md), approved
+- [x] Build it and close it out
 
 ### 2. Data model · needs a decision
 Core records every slice builds on: the user's home currency, categories, monthly budgets, expenses, and recurring rules.
@@ -54,7 +55,7 @@ The thinnest real thread through the app, and also its walking skeleton: sign in
 ## Slice 2: Auto categorize
 
 ### 5. Auto categorize · needs a decision
-Each expense lands in a budget category without you picking one, using a typed choice among your existing categories.
+Each expense lands in a budget category without you picking one. Your past corrections are checked first, then a typed choice among your categories for text it hasn't seen.
 **Done when:** new expenses get one of the user's categories, a wrong pick is fixed in one tap, and when nothing fits well the expense is saved as Uncategorized instead of guessed.
 - [ ] Plan it: `prompts/NN-auto-categorize.md`, approved
 
@@ -69,7 +70,7 @@ Set a limit per category for the month and see what's left at a glance.
 
 ### 7. Overspend alerts · needs a decision
 Warn inside the app when a category is on pace to go over its limit before the month ends.
-**Done when:** a category projected to go over shows a warning, a category already over shows as over, and both states are clear without relying on color.
+**Done when:** checked each time an expense is saved, a category projected to go over shows a warning, a category already over shows as over, and both states are clear without relying on color.
 - [ ] Plan it: `prompts/NN-overspend-alerts.md`, approved
 
 ## Slice 5: Push notifications
@@ -83,7 +84,7 @@ Overspend alerts reach you even when the app is closed.
 
 ### 9. Recurring expenses · needs a decision
 Rent, subscriptions, and debit orders are logged for you every month.
-**Done when:** a user can mark an expense as monthly, it is logged on its day, it can be paused, edited, or stopped, and opening the app late never creates duplicates.
+**Done when:** a user can mark an expense as monthly, it is filled in on or after its day when the app next talks to the server, it can be paused, edited, or stopped, and opening the app late never creates duplicates.
 - [ ] Plan it: `prompts/NN-recurring-expenses.md`, approved
 
 ## Slice 7: Ask about spending
@@ -102,10 +103,10 @@ Suggested monthly limits per category, based on how you actually spend.
 
 ## Release readiness
 
-### 12. Product analytics · needs a decision
-Measure the weekly logging habit without collecting anything personal.
-**Done when:** signed up, expense logged, budget set, and alert seen are tracked against the signed in account; amounts and typed text are never sent; week 2 and week 4 logging retention can be read; analytics failures never block the app.
-- [ ] Plan it: `prompts/NN-product-analytics.md`, approved
+### 12. Analytics & error reporting · needs a decision
+Measure the weekly logging habit and catch crashes without collecting anything personal.
+**Done when:** signed up, expense logged, budget set, and alert seen are tracked against the signed in account; amounts and typed text are never sent; week 2 and week 4 logging retention can be read; crashes and API errors reach error reporting with typed text and amounts scrubbed; analytics and error reporting failures never block the app.
+- [ ] Plan it: `prompts/NN-analytics-and-errors.md`, approved
 
 ### 13. Privacy, terms & account deletion · needs a decision
 Financial data is sensitive, and laws like POPIA and GDPR expect you to be able to see the rules and leave.
@@ -131,11 +132,12 @@ Out of scope for release 1, kept so the plan stays honest.
 | State | The feature shows |
 |---|---|
 | `planned` · needs a decision | one box: `Plan it: prompts/NN-<feature>.md, approved` |
-| `in-progress` (approved) | `Plan it` ticked and linked; `Build it` with 2 to 5 milestones from the plan; `Close it out` (Verification, report, `## Result`, AGENTS.md updated) |
-| `done` | every box ticked; the plan says `Status: done` |
+| `in-progress` | `Plan it` ticked, with the real plan file linked; one more box: `Build it and close it out` |
+| `done` | both boxes ticked; the plan says `Status: done` |
 
+- **This file says what to build and in what order. The plan in `prompts/` says how.** Milestones, build steps, and verification live only in the plan, never copied here.
+- **The plan's `Status:` line is the detailed truth.** The status here is a quick index, updated at approval and at close out.
 - **Next step** = the first unticked box.
 - **needs a decision** = the plan must settle it, and you approve it before any app code is written.
-- **Build steps live in the plan in `prompts/`, not here.** The scope carries only the milestone rollup.
 - **NN** = the next free plan number when the plan is written.
 - **Status** `planned` → `in-progress` → `done`, plus `dropped` (taken out of scope, kept for history).
