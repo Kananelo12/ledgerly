@@ -15,7 +15,8 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 |---|---------|-------|--------|
 | 1 | Stack & architecture | Foundation | done |
 | 2 | Data model | Foundation | planned |
-| 3 | Design system & UI foundation | Foundation | planned |
+| 3 | Design system & UI foundation | Foundation | done |
+| 3b | Onboarding & auth screens | Foundation | done |
 | 4 | Core logging loop | Slice 1 | planned |
 | 5 | Auto categorize | Slice 2 | planned |
 | 6 | Monthly budgets | Slice 3 | planned |
@@ -40,10 +41,17 @@ Core records every slice builds on: the user's home currency, categories, monthl
 **Done when:** amounts never lose cents, each record belongs to exactly one user, and income, multi currency, and shared budgets can be added later without a breaking migration.
 - [ ] Plan it: `prompts/NN-data-model.md`, approved
 
-### 3. Design system & UI foundation · needs a decision
+### 3. Design system & UI foundation · done
 Tokens and base components derived from the designs, with accessibility built in from the start.
 **Done when:** color, type, spacing, and radius tokens come from the designs, base components exist, budget states read clearly without relying on color, and screens handle dynamic type and screen readers.
-- [ ] Plan it: `prompts/NN-design-system.md`, approved
+- [x] Plan it: [`prompts/02-design-system.md`](../../prompts/02-design-system.md), approved
+- [x] Build it and close it out
+
+### 3b. Onboarding & auth screens · done
+A first-run onboarding that shows what Ledgerly does, leading into sign up and sign in screens that feature 4 connects to Clerk.
+**Done when:** a signed out user sees the onboarding, can swipe or skip it, and reaches sign up and sign in screens that match the design system.
+- [x] Plan it: [`prompts/03-onboarding.md`](../../prompts/03-onboarding.md), approved
+- [x] Build it and close it out
 
 ## Slice 1: Core logging loop
 

@@ -21,8 +21,10 @@ npx eas-cli@latest <cmd>    # EAS builds, submits, and updates (use instead of b
 
 - Expo ships breaking changes every SDK release, so don't trust memory. Before touching an Expo, EAS, or React Native API, check the `expo` major version in `package.json` and read `https://docs.expo.dev/versions/v<major>.0.0/`. For anything else, start from https://docs.expo.dev/llms.txt and follow its links.
 - Routes live in `src/app/`: every file is a screen and `_layout.tsx` files define navigators. API routes are `src/app/api/*+api.ts`. Keep components, hooks, and utils outside `src/app/`.
+- Signed-out screens live in `src/app/(auth)/`: `/onboarding`, `/sign-up`, `/sign-in`, with no header. Until Clerk is connected, `src/app/index.tsx` redirects to `/onboarding` and the auth forms are UI shells. Feature 4 replaces this with a `Stack.Protected` session guard (`redirectTo` is SDK 58+ only).
+- Android is edge-to-edge, so the window doesn't resize for the keyboard. Forms use `KeyboardAvoidingView behavior="padding"` on both platforms around a ScrollView.
 - `ios/` and `android/` are generated. Never create or edit them by hand; configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, switch to a development build (`npx expo run:android`). Development and testing happen on a physical Android phone in Expo Go, connected by USB debugging.
+- Expo Go only includes its bundled native modules. After adding a library with native code, switch to a development build (`npx expo run:android`). Development and testing happen on a physical Android phone in Expo Go, connected by USB debugging. The Expo Go version on the phone must match the project's SDK (57), or it refuses to load the project.
 
 ## Who owns what
 
@@ -71,9 +73,23 @@ For a new feature or a change across several files. Small fixes and questions sk
 Designs are attached in the chat. Screens must match them exactly: layout, spacing, sizes, colors, type, radii, icons, and copy.
 
 - Icons, fonts, and brand images come from `assets/` or the chosen icon library, never recreated from a screenshot. Sample images may be remote placeholders. If an asset is missing, use a marked placeholder and list it.
-- Map every color, font, spacing value, and radius to a design-system token. List values with no token in the plan as proposed new tokens instead of hardcoding them. When creating the design system itself, derive the tokens from the designs.
+- Map every color, font, spacing value, radius, and size to a token in `src/theme/` (see Design system). List values with no token in the plan as proposed new tokens instead of hardcoding them.
 - UI plans describe the design (elements, states, tokens, assets) well enough to build without the image. If building in a new session, ask for the design to be attached again.
-- After building, open the screen on the Android phone (when it isn't the first screen, deep link with `adb shell am start -a android.intent.action.VIEW -d "<url>"`; in Expo Go the URL is `exp://<dev server address>/--/<path>`, and the `ledgerly://` scheme from `app.json` works only in a development build), take a screenshot (`adb exec-out screencap -p > <path>`), and compare it with the design. List every difference, fix, and repeat. Report which values were estimated from an image.
+- After building, open the screen on the Android phone (when it isn't the first screen, deep link with `adb shell am start -a android.intent.action.VIEW -d "<url>"`; in Expo Go the URL is `exp://<dev server address>/--/<path>`, and the `ledgerly://` scheme from `app.json` works only in a development build), take a screenshot (`adb exec-out screencap -p > <path>`), and compare it with the design. List every difference, fix, and repeat. Report which values were estimated from an image. From Git Bash, set `MSYS_NO_PATHCONV=1` before adb commands that take device paths such as `/sdcard/...`.
+- Check large text by setting `adb shell settings put system font_scale 2.0` and restoring it to the previous value afterwards (changing it restarts Expo Go). Check labels, roles, and states with `adb shell uiautomator dump`.
+
+## Design system
+
+- Tokens live only in `src/theme/` and are imported from `@/theme`: `colors`, `gradients`, `type`/`fonts`, `spacing`, `radius`, `sizes`, `shadows`, `motion`/`states`. Shared components live in `src/components/` (kebab-case files, named exports). Screens use components and never redefine colors, fonts, or sizes. No hex, font size, or spacing literal outside `src/theme/` unless it has a comment saying why.
+- Light only for now (`userInterfaceStyle: "light"`). Colors are brand hex tokens, so dark mode means adding a second palette in `colors.ts`, not changing components.
+- Fonts: Space Grotesk (display, headings, amounts) and Inter (everything else) from `@expo-google-fonts`, loaded in the root layout while the splash screen stays up. Weight comes from `fontFamily` (e.g. `Inter_500Medium`); never set `fontWeight`. Text goes through `Text` with `variant` and `color` props.
+- Icons: Lucide (`lucide-react-native`) through the `Icon` component, stroke 1.75. Gradients: `expo-linear-gradient`.
+- Status and budget states never rely on color alone. They pair it with an icon or text, and small status text uses the `xText` shades so it keeps 4.5:1 contrast. Icon-only controls require an `accessibilityLabel`. Every tappable element has pressed feedback and a role/state. Never disable font scaling. Use `minHeight` and padding instead of fixed heights.
+- Scroll views that contain inputs set `keyboardShouldPersistTaps="handled"`, so a tap on a control works while the keyboard is open.
+- `/design-system` (`src/app/design-system.tsx`) is the dev-only showcase. Give each new shared component an entry there.
+- Screen-private components live in `src/screens/<name>/` and move to `src/components/` once a second screen needs them.
+- Photos are remote Unsplash images (`images.unsplash.com`, free license only, no Unsplash+) through `expo-image`, on a `surface` background as the loading and failure fallback. Note the photographer and photo page in a comment.
+- Example figures in marketing UI (onboarding cards) show real Ledgerly features only, in Rand, and are marked illustrative in code.
 
 ## Reporting
 
